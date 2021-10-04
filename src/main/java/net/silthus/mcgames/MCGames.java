@@ -1,4 +1,4 @@
-package net.silthus.template;
+package net.silthus.mcgames;
 
 import kr.entree.spigradle.annotations.PluginMain;
 import org.bukkit.event.EventHandler;
@@ -11,11 +11,11 @@ import org.bukkit.plugin.java.JavaPluginLoader;
 import java.io.File;
 
 @PluginMain
-public class TemplatePlugin extends JavaPlugin implements Listener {
+public class MCGames extends JavaPlugin implements Listener {
 
-  public TemplatePlugin() {}
+  public MCGames() {}
 
-  public TemplatePlugin(
+  public MCGames(
       JavaPluginLoader loader, PluginDescriptionFile description, File dataFolder, File file) {
     super(loader, description, dataFolder, file);
   }
