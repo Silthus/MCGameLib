@@ -300,4 +300,41 @@ public class GameTests extends TestBase {
         assertThatExceptionOfType(UnsupportedOperationException.class)
                 .isThrownBy(() -> game.getAllPlayers().add(server.addPlayer()));
     }
+
+    @Test
+    void getScore_ofUnjoinedPlayer_defaultsToZero() {
+
+        assertThat(game.getScore(server.addPlayer()))
+                .isZero();
+    }
+
+    @Test
+    void getScore_ofJoinedPlayer_defaultsToZero() {
+
+        PlayerMock player = server.addPlayer();
+        game.join(player);
+
+        assertThat(game.getScore(player))
+                .isZero();
+    }
+
+    @Test
+    void setScore_updatesPlayerScore() {
+
+        PlayerMock player = server.addPlayer();
+        game.join(player);
+
+        game.setScore(player, 100);
+
+        assertThat(game.getScore(player)).isEqualTo(100);
+    }
+
+    @Test
+    void setScore_ofUnjoinedPlayer_isNotUpdated() {
+
+        PlayerMock player = server.addPlayer();
+        game.setScore(player, 100);
+
+        assertThat(game.getScore(player)).isZero();
+    }
 }

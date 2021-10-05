@@ -60,6 +60,18 @@ public class Game {
                 .orElse(false);
     }
 
+    public int getScore(Player player) {
+        return getGamePlayer(player)
+                .map(GamePlayer::score)
+                .orElse(0);
+    }
+
+    public void setScore(Player player, int score) {
+        getGamePlayer(player).ifPresent(gamePlayer ->
+                gamePlayer.score(score)
+        );
+    }
+
     public void start() {
         setState(GameState.STARTED);
     }
@@ -100,14 +112,14 @@ public class Game {
         return ChatColor.AQUA + "[" + ChatColor.GOLD + getTitle() + ChatColor.AQUA + "] " + ChatColor.RESET;
     }
 
-    @Getter
-    @Setter
+    @Data
     @Accessors(fluent = true)
     @EqualsAndHashCode(of = "player")
     private static class GamePlayer {
 
         private final Player player;
         private Status status = Status.PLAYING;
+        private int score = 0;
 
         private GamePlayer(Player player) {
             this.player = player;
