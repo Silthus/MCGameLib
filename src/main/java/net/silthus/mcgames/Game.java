@@ -1,14 +1,13 @@
 package net.silthus.mcgames;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.Setter;
+import lombok.*;
+import lombok.experimental.Accessors;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -22,8 +21,7 @@ public class Game {
     @Getter
     @Setter(AccessLevel.PRIVATE)
     private GameState state = GameState.NOT_STARTED;
-    private final Set<Player> players = new HashSet<>();
-    private final Set<Player> spectators = new HashSet<>();
+    private final Set<GamePlayer> players = new HashSet<>();
 
     public void setTitle(String title) {
         if (title == null || title.trim().equals(""))
@@ -32,11 +30,17 @@ public class Game {
     }
 
     public Collection<Player> getPlayers() {
-        return Set.copyOf(players);
+        return players.stream()
+                .filter(GamePlayer::isPlaying)
+                .map(GamePlayer::player)
+                .collect(Collectors.toUnmodifiableSet());
     }
 
     public Collection<Player> getSpectators() {
-        return Set.copyOf(spectators);
+        return players.stream()
+                .filter(GamePlayer::isSpectating)
+                .map(GamePlayer::player)
+                .collect(Collectors.toUnmodifiableSet());
     }
 
     public Collection<Player> getAllPlayers() {
@@ -45,11 +49,15 @@ public class Game {
     }
 
     public boolean isPlaying(Player player) {
-        return getPlayers().contains(player);
+        return getGamePlayer(player)
+                .map(GamePlayer::isPlaying)
+                .orElse(false);
     }
 
     public boolean isSpectating(Player player) {
-        return spectators.contains(player);
+        return getGamePlayer(player)
+                .map(GamePlayer::isSpectating)
+                .orElse(false);
     }
 
     public void start() {
@@ -61,24 +69,61 @@ public class Game {
     }
 
     public void join(@NonNull Player player) {
-        players.add(player);
-    }
-
-    public void quit(@NonNull Player player) {
-        players.remove(player);
-        spectators.remove(player);
+        addOrUpdatePlayer(player, GamePlayer.Status.PLAYING);
     }
 
     public void spectate(@NonNull Player player) {
-        players.remove(player);
-        spectators.add(player);
+        addOrUpdatePlayer(player, GamePlayer.Status.SPECTATING);
+    }
+
+    public void quit(@NonNull Player player) {
+        players.remove(new GamePlayer(player));
     }
 
     public void broadcast(String message) {
         getPlayers().forEach(player -> player.sendMessage(getPrefix() + message));
     }
 
+    private void addOrUpdatePlayer(Player player, GamePlayer.Status status) {
+        if (!players.add(new GamePlayer(player).status(status))) {
+            getGamePlayer(player).ifPresent(gamePlayer -> gamePlayer.status(status));
+        }
+    }
+
+    private Optional<GamePlayer> getGamePlayer(Player player) {
+        return players.stream()
+                .filter(gamePlayer -> gamePlayer.player().equals(player))
+                .findFirst();
+    }
+
     private String getPrefix() {
         return ChatColor.AQUA + "[" + ChatColor.GOLD + getTitle() + ChatColor.AQUA + "] " + ChatColor.RESET;
+    }
+
+    @Getter
+    @Setter
+    @Accessors(fluent = true)
+    @EqualsAndHashCode(of = "player")
+    private static class GamePlayer {
+
+        private final Player player;
+        private Status status = Status.PLAYING;
+
+        private GamePlayer(Player player) {
+            this.player = player;
+        }
+
+        public boolean isSpectating() {
+            return status == Status.SPECTATING;
+        }
+
+        public boolean isPlaying() {
+            return status == Status.PLAYING;
+        }
+
+        enum Status {
+            PLAYING,
+            SPECTATING
+        }
     }
 }
