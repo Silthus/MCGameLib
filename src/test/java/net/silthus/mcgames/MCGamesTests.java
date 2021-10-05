@@ -1,32 +1,25 @@
 package net.silthus.mcgames;
 
-import be.seeseemelk.mockbukkit.MockBukkit;
-import be.seeseemelk.mockbukkit.ServerMock;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class MCGamesTests {
+import static org.assertj.core.api.Assertions.*;
 
-  private ServerMock server;
+public class MCGamesTests extends TestBase {
 
-  @BeforeEach
-  public void setUp() {
-    server = MockBukkit.mock();
-    MockBukkit.load(MCGames.class);
-  }
+    @Test
+    void create() {
 
-  @Test
-  public void shouldFirePlayerJoinEvent() {
+        assertThatExceptionOfType(IllegalStateException.class)
+                .isThrownBy(MCGames::new);
+    }
 
-    server.addPlayer();
+    @Test
+    public void shouldFirePlayerJoinEvent() {
 
-    server.getPluginManager().assertEventFired(PlayerJoinEvent.class);
-  }
+        server.addPlayer();
 
-  @AfterEach
-  public void tearDown() {
-    MockBukkit.unmock();
-  }
+        server.getPluginManager().assertEventFired(PlayerJoinEvent.class);
+    }
+
 }
