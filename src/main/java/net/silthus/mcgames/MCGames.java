@@ -13,21 +13,22 @@ import java.io.File;
 @PluginMain
 public class MCGames extends JavaPlugin implements Listener {
 
-  public MCGames() {}
+    public MCGames() {
+    }
 
-  public MCGames(
-      JavaPluginLoader loader, PluginDescriptionFile description, File dataFolder, File file) {
-    super(loader, description, dataFolder, file);
-  }
+    public MCGames(
+            JavaPluginLoader loader, PluginDescriptionFile description, File dataFolder, File file) {
+        super(loader, description, dataFolder, file);
+    }
 
-  @Override
-  public void onEnable() {
+    @Override
+    public void onEnable() {
 
-    getServer().getPluginManager().registerEvents(this, this);
-  }
+        getServer().getPluginManager().registerEvents(this, this);
+    }
 
-  @EventHandler
-  public void onPlayerJoin(PlayerJoinEvent event) {
-    getLogger().info("Player joined.");
-  }
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        getLogger().info("Player joined.");
+    }
 }

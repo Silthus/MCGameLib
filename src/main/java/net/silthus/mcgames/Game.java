@@ -2,6 +2,8 @@ package net.silthus.mcgames;
 
 import lombok.*;
 import lombok.experimental.Accessors;
+import net.silthus.mcgames.events.JoinGameEvent;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -12,16 +14,21 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@Data
 public class Game {
 
     public static final String DEFAULT_GAME_TITLE = "Unknown Game";
 
-    @Getter
+    private final GameMode gameMode;
+    private final Set<GamePlayer> players = new HashSet<>();
+
     private String title = DEFAULT_GAME_TITLE;
-    @Getter
     @Setter(AccessLevel.PRIVATE)
     private GameState state = GameState.NOT_STARTED;
-    private final Set<GamePlayer> players = new HashSet<>();
+
+    public Game(GameMode gameMode) {
+        this.gameMode = gameMode;
+    }
 
     public void setTitle(String title) {
         if (title == null || title.trim().equals(""))
@@ -60,16 +67,17 @@ public class Game {
                 .orElse(false);
     }
 
-    public int getScore(Player player) {
+    public int score(Player player) {
         return getGamePlayer(player)
                 .map(GamePlayer::score)
                 .orElse(0);
     }
 
-    public void setScore(Player player, int score) {
+    public Game score(Player player, int score) {
         getGamePlayer(player).ifPresent(gamePlayer ->
                 gamePlayer.score(score)
         );
+        return this;
     }
 
     public void start() {
@@ -81,7 +89,18 @@ public class Game {
     }
 
     public void join(@NonNull Player player) {
+        if (fireJoinGameEvent(player).isCancelled()) return;
+
+        if (canJoin()) {
+            throw new GameException(player.getName() + " cannot join the game. The game is full.");
+        }
+
         addOrUpdatePlayer(player, GamePlayer.Status.PLAYING);
+    }
+
+    public boolean canJoin() {
+        return gameMode.hasMaxPlayerLimit()
+                && getPlayers().size() >= gameMode.getMaxPlayers();
     }
 
     public void spectate(@NonNull Player player) {
@@ -93,7 +112,7 @@ public class Game {
     }
 
     public void broadcast(String message) {
-        getPlayers().forEach(player -> player.sendMessage(getPrefix() + message));
+        getPlayers().forEach(player -> player.sendMessage(prefix() + message));
     }
 
     private void addOrUpdatePlayer(Player player, GamePlayer.Status status) {
@@ -108,14 +127,21 @@ public class Game {
                 .findFirst();
     }
 
-    private String getPrefix() {
+    private String prefix() {
         return ChatColor.AQUA + "[" + ChatColor.GOLD + getTitle() + ChatColor.AQUA + "] " + ChatColor.RESET;
+    }
+
+    private JoinGameEvent fireJoinGameEvent(Player player) {
+        JoinGameEvent joinGameEvent = new JoinGameEvent(this, player);
+        Bukkit.getPluginManager().callEvent(joinGameEvent);
+        return joinGameEvent;
     }
 
     @Data
     @Accessors(fluent = true)
     @EqualsAndHashCode(of = "player")
     private static class GamePlayer {
+
 
         private final Player player;
         private Status status = Status.PLAYING;
@@ -132,6 +158,7 @@ public class Game {
         public boolean isPlaying() {
             return status == Status.PLAYING;
         }
+
 
         enum Status {
             PLAYING,

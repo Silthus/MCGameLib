@@ -6,8 +6,9 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
 public class TestBase {
+
     protected ServerMock server;
-    private MCGames plugin;
+    protected MCGames plugin;
 
     @BeforeEach
     public void setUp() {

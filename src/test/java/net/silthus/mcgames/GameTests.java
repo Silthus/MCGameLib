@@ -1,25 +1,37 @@
 package net.silthus.mcgames;
 
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
+import net.silthus.mcgames.events.JoinGameEvent;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.GameEvent;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.ArgumentCaptor;
 
 import java.util.ArrayList;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 public class GameTests extends TestBase {
 
+    private GameMode gameMode;
     private Game game;
 
     @BeforeEach
     public void setUp() {
         super.setUp();
 
-        game = new Game();
+        gameMode = GameMode.builder().identifier("test").build();
+        game = new Game(gameMode);
     }
 
     @Test
@@ -304,7 +316,7 @@ public class GameTests extends TestBase {
     @Test
     void getScore_ofUnjoinedPlayer_defaultsToZero() {
 
-        assertThat(game.getScore(server.addPlayer()))
+        assertThat(game.score(server.addPlayer()))
                 .isZero();
     }
 
@@ -314,7 +326,7 @@ public class GameTests extends TestBase {
         PlayerMock player = server.addPlayer();
         game.join(player);
 
-        assertThat(game.getScore(player))
+        assertThat(game.score(player))
                 .isZero();
     }
 
@@ -324,17 +336,149 @@ public class GameTests extends TestBase {
         PlayerMock player = server.addPlayer();
         game.join(player);
 
-        game.setScore(player, 100);
+        game.score(player, 100);
 
-        assertThat(game.getScore(player)).isEqualTo(100);
+        assertThat(game.score(player)).isEqualTo(100);
     }
 
     @Test
     void setScore_ofUnjoinedPlayer_isNotUpdated() {
 
         PlayerMock player = server.addPlayer();
-        game.setScore(player, 100);
+        game.score(player, 100);
 
-        assertThat(game.getScore(player)).isZero();
+        assertThat(game.score(player)).isZero();
+    }
+
+    @Nested
+    @DisplayName("with GameMode")
+    class WithGameMode {
+
+        @Test
+        void create() {
+
+            GameMode gameMode = GameMode.builder().build();
+            Game game = new Game(gameMode);
+
+            assertThat(game.getGameMode()).isEqualTo(gameMode);
+        }
+
+        @Test
+        void canJoin() {
+
+            game = new Game(GameMode.builder().maxPlayers(2).build());
+            game.join(server.addPlayer());
+            game.join(server.addPlayer());
+
+            assertThat(game.canJoin()).isTrue();
+        }
+
+        @Test
+        void joinWithMaxPlayersReached_errorJoinResult() {
+
+            game = new Game(GameMode.builder()
+                    .maxPlayers(1)
+                    .build());
+
+            assertThatCode(() -> game.join(server.addPlayer()))
+                    .doesNotThrowAnyException();
+
+            PlayerMock player = server.addPlayer();
+            assertThatExceptionOfType(GameException.class)
+                    .isThrownBy(() -> game.join(player))
+                    .withMessage(player.getName() + " cannot join the game. The game is full.");
+        }
+
+        @Test
+        void joinIsPossible_ifSpectatorsOnly() {
+
+            game = new Game(GameMode.builder()
+                    .maxPlayers(2)
+                    .build());
+
+            game.join(server.addPlayer());
+            game.spectate(server.addPlayer());
+            game.spectate(server.addPlayer());
+
+            assertThatCode(() -> game.join(server.addPlayer()))
+                    .doesNotThrowAnyException();
+        }
+    }
+
+    @Nested
+    class Events {
+
+        private EventListener listener;
+        private ArgumentCaptor<JoinGameEvent> onJoinGame = ArgumentCaptor.forClass(JoinGameEvent.class);
+
+        @BeforeEach
+        void setUp() {
+            listener = spy(new EventListener());
+            Bukkit.getPluginManager().registerEvents(listener, plugin);
+        }
+
+        @Test
+        void joinGameEvent_isFired() {
+
+            PlayerMock player = server.addPlayer();
+            game.join(player);
+
+            verify(listener).onJoinGame(onJoinGame.capture());
+            JoinGameEvent joinGameEvent = onJoinGame.getValue();
+
+            assertThat(joinGameEvent)
+                    .extracting(
+                            JoinGameEvent::getGame,
+                            JoinGameEvent::getPlayer
+                    ).contains(
+                            game,
+                            player
+                    );
+        }
+
+        @Test
+        void joinGameEvent_cancelDoesNotAddPlayer() {
+
+            listener.cancelJoinGame = true;
+
+            PlayerMock player = server.addPlayer();
+            game.join(player);
+
+            verify(listener).onJoinGame(onJoinGame.capture());
+            assertThat(onJoinGame.getValue())
+                    .extracting(JoinGameEvent::isCancelled)
+                    .isEqualTo(true);
+
+            assertThat(game.getPlayers()).isEmpty();
+        }
+
+        @Test
+        void joinGameEvent_shouldFire_beforePlayerSizeCheck() {
+
+            game = new Game(GameMode.builder().maxPlayers(1).build());
+            PlayerMock player1 = server.addPlayer();
+            game.join(player1);
+            doAnswer(invocation -> {
+                Game game = ((JoinGameEvent) invocation.getArgument(0)).getGame();
+                game.quit(player1);
+                return invocation;
+            }).when(listener).onJoinGame(any());
+
+            PlayerMock player2 = server.addPlayer();
+            assertThatCode(() -> game.join(player2))
+                    .doesNotThrowAnyException();
+
+            verify(listener, times(2)).onJoinGame(any());
+        }
+
+        static class EventListener implements Listener {
+
+            boolean cancelJoinGame = false;
+
+            @EventHandler
+            public void onJoinGame(JoinGameEvent event) {
+                event.setCancelled(cancelJoinGame);
+            }
+        }
     }
 }
