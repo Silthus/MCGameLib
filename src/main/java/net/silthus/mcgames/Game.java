@@ -3,6 +3,7 @@ package net.silthus.mcgames;
 import lombok.*;
 import lombok.experimental.Accessors;
 import net.silthus.mcgames.events.JoinGameEvent;
+import net.silthus.mcgames.events.JoinedGameEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -96,6 +97,7 @@ public class Game {
         }
 
         addOrUpdatePlayer(player, GamePlayer.Status.PLAYING);
+        fireJoinedGameEvent(player);
     }
 
     public boolean canJoin() {
@@ -137,10 +139,15 @@ public class Game {
         return joinGameEvent;
     }
 
+    private void fireJoinedGameEvent(Player player) {
+        Bukkit.getPluginManager().callEvent(new JoinedGameEvent(this, player));
+    }
+
     @Data
     @Accessors(fluent = true)
     @EqualsAndHashCode(of = "player")
     private static class GamePlayer {
+
 
 
         private final Player player;

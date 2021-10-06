@@ -4,7 +4,6 @@ import be.seeseemelk.mockbukkit.entity.PlayerMock;
 import net.silthus.mcgames.events.JoinGameEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.GameEvent;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.junit.jupiter.api.BeforeEach;
@@ -402,83 +401,6 @@ public class GameTests extends TestBase {
 
             assertThatCode(() -> game.join(server.addPlayer()))
                     .doesNotThrowAnyException();
-        }
-    }
-
-    @Nested
-    class Events {
-
-        private EventListener listener;
-        private ArgumentCaptor<JoinGameEvent> onJoinGame = ArgumentCaptor.forClass(JoinGameEvent.class);
-
-        @BeforeEach
-        void setUp() {
-            listener = spy(new EventListener());
-            Bukkit.getPluginManager().registerEvents(listener, plugin);
-        }
-
-        @Test
-        void joinGameEvent_isFired() {
-
-            PlayerMock player = server.addPlayer();
-            game.join(player);
-
-            verify(listener).onJoinGame(onJoinGame.capture());
-            JoinGameEvent joinGameEvent = onJoinGame.getValue();
-
-            assertThat(joinGameEvent)
-                    .extracting(
-                            JoinGameEvent::getGame,
-                            JoinGameEvent::getPlayer
-                    ).contains(
-                            game,
-                            player
-                    );
-        }
-
-        @Test
-        void joinGameEvent_cancelDoesNotAddPlayer() {
-
-            listener.cancelJoinGame = true;
-
-            PlayerMock player = server.addPlayer();
-            game.join(player);
-
-            verify(listener).onJoinGame(onJoinGame.capture());
-            assertThat(onJoinGame.getValue())
-                    .extracting(JoinGameEvent::isCancelled)
-                    .isEqualTo(true);
-
-            assertThat(game.getPlayers()).isEmpty();
-        }
-
-        @Test
-        void joinGameEvent_shouldFire_beforePlayerSizeCheck() {
-
-            game = new Game(GameMode.builder().maxPlayers(1).build());
-            PlayerMock player1 = server.addPlayer();
-            game.join(player1);
-            doAnswer(invocation -> {
-                Game game = ((JoinGameEvent) invocation.getArgument(0)).getGame();
-                game.quit(player1);
-                return invocation;
-            }).when(listener).onJoinGame(any());
-
-            PlayerMock player2 = server.addPlayer();
-            assertThatCode(() -> game.join(player2))
-                    .doesNotThrowAnyException();
-
-            verify(listener, times(2)).onJoinGame(any());
-        }
-
-        static class EventListener implements Listener {
-
-            boolean cancelJoinGame = false;
-
-            @EventHandler
-            public void onJoinGame(JoinGameEvent event) {
-                event.setCancelled(cancelJoinGame);
-            }
         }
     }
 }
