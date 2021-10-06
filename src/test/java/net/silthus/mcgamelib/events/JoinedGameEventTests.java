@@ -1,9 +1,9 @@
-package net.silthus.mcgames.events;
+package net.silthus.mcgamelib.events;
 
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
-import net.silthus.mcgames.Game;
-import net.silthus.mcgames.GameMode;
-import net.silthus.mcgames.TestBase;
+import net.silthus.mcgamelib.Game;
+import net.silthus.mcgamelib.GameMode;
+import net.silthus.mcgamelib.TestBase;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

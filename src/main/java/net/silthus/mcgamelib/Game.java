@@ -1,9 +1,9 @@
-package net.silthus.mcgames;
+package net.silthus.mcgamelib;
 
 import lombok.*;
 import lombok.experimental.Accessors;
-import net.silthus.mcgames.events.JoinGameEvent;
-import net.silthus.mcgames.events.JoinedGameEvent;
+import net.silthus.mcgamelib.events.JoinGameEvent;
+import net.silthus.mcgamelib.events.JoinedGameEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;

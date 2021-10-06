@@ -1,4 +1,4 @@
-package net.silthus.mcgames;
+package net.silthus.mcgamelib;
 
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.junit.jupiter.api.Test;

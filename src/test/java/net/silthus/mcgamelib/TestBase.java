@@ -1,4 +1,4 @@
-package net.silthus.mcgames;
+package net.silthus.mcgamelib;
 
 import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.ServerMock;

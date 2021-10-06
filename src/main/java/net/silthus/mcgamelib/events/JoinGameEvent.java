@@ -1,23 +1,24 @@
-package net.silthus.mcgames.events;
+package net.silthus.mcgamelib.events;
 
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.Value;
-import net.silthus.mcgames.Game;
+import net.silthus.mcgamelib.Game;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-@Value
+@Data
 @EqualsAndHashCode(callSuper = true)
-public class JoinedGameEvent extends Event {
+public class JoinGameEvent extends Event implements Cancellable {
 
-    Game game;
-    Player player;
+    private final Game game;
+    private final Player player;
+    private boolean cancelled;
 
-    public JoinedGameEvent(Game game, Player player) {
-
+    public JoinGameEvent(Game game, Player player) {
         this.game = game;
         this.player = player;
     }

@@ -1,4 +1,4 @@
-package net.silthus.mcgames;
+package net.silthus.mcgamelib;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

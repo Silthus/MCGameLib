@@ -1,4 +1,4 @@
-package net.silthus.mcgames;
+package net.silthus.mcgamelib;
 
 import kr.entree.spigradle.annotations.PluginMain;
 import org.bukkit.event.EventHandler;
