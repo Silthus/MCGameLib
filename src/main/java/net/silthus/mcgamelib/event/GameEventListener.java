@@ -1,22 +1,24 @@
 package net.silthus.mcgamelib.event;
 
-import lombok.Value;
+import lombok.NonNull;
 import net.silthus.mcgamelib.Game;
 import org.bukkit.event.Event;
 import org.bukkit.event.Listener;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
-@Value
-public class GameEventListener {
+public record GameEventListener(
+        Game game,
+        Listener listener,
+        Class<? extends Event> eventClass,
+        Method method,
+        GameEvent annotation,
+        @NonNull List<? extends GameEventFilter> filters
+) {
 
     static GameEventListener empty() {
-        return new GameEventListener(null, null, null, null, null);
+        return new GameEventListener(null, null, null, null, null, new ArrayList<>());
     }
-
-    Game game;
-    Listener listener;
-    Class<? extends Event> eventClass;
-    Method method;
-    GameEvent annotation;
 }

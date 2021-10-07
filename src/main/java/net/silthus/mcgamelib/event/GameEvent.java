@@ -1,5 +1,6 @@
 package net.silthus.mcgamelib.event;
 
+import net.silthus.mcgamelib.event.filters.Playing;
 import org.bukkit.event.EventPriority;
 
 import java.lang.annotation.ElementType;
@@ -41,26 +42,34 @@ public @interface GameEvent {
      * If ignoreCancelled is true and the event is cancelled, the method is
      * not called. Otherwise, the method is always called.
      *
-     * @return whether cancelled events should be ignored
+     * @return whether cancelled events are ignored
      */
     boolean ignoreCancelled() default false;
 
-//    /**
-//     * Provide a list of {@link EventFilter}s that should be applied
-//     * before calling the event handler.
-//     * <p>By default the event is only called for {@link net.silthus.mcgamelib.User}s
-//     * and {@link org.bukkit.entity.Player}s that are currently playing the game.
-//     * <p>You can overwrite this to for example only get notified of spectators
-//     * by using the {@link net.silthus.mcgamelib.event.filters.SpectatorFilter}.
-//     * <pre>{@code
-//     * @GameEvent(filters = {SpectatorFilter.class})
-//     * public void onPlayerDamage(PlayerDamageEvent event) {
-//     *     event.setCancelled(true);
-//     * }
-//     * }</pre>
-//     * @return a list of filters that should be applied to the event
-//     */
-//    Class<? extends EventFilter>[] filters() default {
-//            PlayerFilter.class
-//    };
+    /**
+     * Set true to ignore all applied filters and always call the event listener.
+     *
+     * @return true if filters are ignored
+     */
+    boolean ignoreFilters() default false;
+
+    /**
+     * Provide a list of {@link GameEventFilter}s that should be applied
+     * before calling the event handler.
+     * <p>By default the event is only called for {@link org.bukkit.entity.Player}s
+     * that are currently playing the game.
+     * <p>You can overwrite this to only get notified of spectators
+     * by using the {@link net.silthus.mcgamelib.event.filters.Spectating} filter.
+     * <pre>{@code
+     * @GameEvent(filters = {SpectatorFilter.class})
+     * public void onPlayerDamage(PlayerDamageEvent event) {
+     *     event.setCancelled(true);
+     * }
+     * }</pre>
+     * <p>You can turn off all filters by setting {@link #ignoreFilters()} to false.
+     * @return a list of filters that are applied to the event
+     */
+    Class<? extends GameEventFilter>[] filters() default {
+            Playing.class
+    };
 }
