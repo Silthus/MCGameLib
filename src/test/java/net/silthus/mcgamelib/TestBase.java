@@ -8,12 +8,12 @@ import org.junit.jupiter.api.BeforeEach;
 public class TestBase {
 
     protected ServerMock server;
-    protected MCGames plugin;
+    protected MCGameLib plugin;
 
     @BeforeEach
     public void setUp() {
         server = MockBukkit.mock();
-        plugin = MockBukkit.load(MCGames.class);
+        plugin = MockBukkit.load(MCGameLib.class);
     }
 
     @AfterEach

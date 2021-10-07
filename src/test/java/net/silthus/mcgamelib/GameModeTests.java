@@ -196,4 +196,14 @@ public class GameModeTests extends TestBase {
         assertThat(gameMode2.equals(gameMode3)).isFalse();
         assertThat(gameMode3.equals(gameMode4)).isFalse();
     }
+
+    @Test
+    void newGame_containsGameMode() {
+
+        GameMode gameMode = GameMode.builder().build();
+
+        Game game = gameMode.newGame();
+
+        assertThat(game.getGameMode()).isEqualTo(gameMode);
+    }
 }

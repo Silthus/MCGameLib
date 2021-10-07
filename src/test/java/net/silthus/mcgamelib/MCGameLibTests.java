@@ -5,13 +5,13 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
-public class MCGamesTests extends TestBase {
+public class MCGameLibTests extends TestBase {
 
     @Test
     void create() {
 
         assertThatExceptionOfType(IllegalStateException.class)
-                .isThrownBy(MCGames::new);
+                .isThrownBy(MCGameLib::new);
     }
 
     @Test

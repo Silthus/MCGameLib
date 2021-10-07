@@ -25,6 +25,10 @@ public class GameMode {
         return maxPlayers > 0;
     }
 
+    public Game newGame() {
+        return new Game(this);
+    }
+
     public static class GameModeBuilder {
 
         public GameModeBuilder name(String name) {

@@ -11,12 +11,12 @@ import org.bukkit.plugin.java.JavaPluginLoader;
 import java.io.File;
 
 @PluginMain
-public class MCGames extends JavaPlugin implements Listener {
+public class MCGameLib extends JavaPlugin implements Listener {
 
-    public MCGames() {
+    public MCGameLib() {
     }
 
-    public MCGames(
+    public MCGameLib(
             JavaPluginLoader loader, PluginDescriptionFile description, File dataFolder, File file) {
         super(loader, description, dataFolder, file);
     }

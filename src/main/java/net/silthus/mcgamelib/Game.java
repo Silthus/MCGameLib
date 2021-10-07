@@ -8,10 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -20,6 +17,7 @@ public class Game {
 
     public static final String DEFAULT_GAME_TITLE = "Unknown Game";
 
+    private final UUID id = UUID.randomUUID();
     private final GameMode gameMode;
     private final Set<GamePlayer> players = new HashSet<>();
 

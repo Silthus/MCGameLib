@@ -12,7 +12,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 import java.util.ArrayList;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 
 public class GameTests extends TestBase {
 
@@ -25,6 +24,15 @@ public class GameTests extends TestBase {
 
         gameMode = GameMode.builder().identifier("test").build();
         game = new Game(gameMode);
+    }
+
+    @Test
+    void newGame_hasUniqueId() {
+
+        Game game1 = new Game(gameMode);
+        Game game2 = new Game(gameMode);
+
+        assertThat(game1.getId().equals(game2.getId())).isFalse();
     }
 
     @Test
