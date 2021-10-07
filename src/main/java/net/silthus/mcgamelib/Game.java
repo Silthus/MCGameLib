@@ -4,9 +4,11 @@ import lombok.*;
 import lombok.experimental.Accessors;
 import net.silthus.mcgamelib.events.JoinGameEvent;
 import net.silthus.mcgamelib.events.JoinedGameEvent;
+import net.silthus.mcgamelib.events.QuitGameEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Listener;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -80,7 +82,15 @@ public class Game {
     }
 
     public void start() {
+        if (!canStart()) {
+            throw new GameException("Cannot start game. Required players: "
+                    + getPlayers().size() + "/" + getGameMode().getMinPlayers());
+        }
         setState(GameState.STARTED);
+    }
+
+    public boolean canStart() {
+        return getGameMode().getMinPlayers() <= getPlayers().size();
     }
 
     public void stop() {
@@ -90,7 +100,7 @@ public class Game {
     public void join(@NonNull Player player) {
         if (fireJoinGameEvent(player).isCancelled()) return;
 
-        if (canJoin()) {
+        if (!canJoin()) {
             throw new GameException(player.getName() + " cannot join the game. The game is full.");
         }
 
@@ -99,8 +109,8 @@ public class Game {
     }
 
     public boolean canJoin() {
-        return gameMode.hasMaxPlayerLimit()
-                && getPlayers().size() >= gameMode.getMaxPlayers();
+        return !gameMode.hasMaxPlayerLimit()
+                || getPlayers().size() < gameMode.getMaxPlayers();
     }
 
     public void spectate(@NonNull Player player) {
@@ -109,10 +119,15 @@ public class Game {
 
     public void quit(@NonNull Player player) {
         players.remove(new GamePlayer(player));
+        fireQuitGameEvent(player);
     }
 
     public void broadcast(String message) {
         getPlayers().forEach(player -> player.sendMessage(prefix() + message));
+    }
+
+    public void registerEvents(Listener listener) {
+        MCGameLib.instance().getGameEventHandler().registerEvents(this, listener);
     }
 
     private void addOrUpdatePlayer(Player player, GamePlayer.Status status) {
@@ -139,6 +154,10 @@ public class Game {
 
     private void fireJoinedGameEvent(Player player) {
         Bukkit.getPluginManager().callEvent(new JoinedGameEvent(this, player));
+    }
+
+    private void fireQuitGameEvent(Player player) {
+        Bukkit.getPluginManager().callEvent(new QuitGameEvent(this, player));
     }
 
     @Data

@@ -17,7 +17,7 @@ public class GameMode {
     @Builder.Default
     String name = DEFAULT_NAME;
     @Builder.Default
-    int minPlayers = 0;
+    int minPlayers = -1;
     @Builder.Default
     int maxPlayers = -1;
 

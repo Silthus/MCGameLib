@@ -5,18 +5,18 @@ import lombok.extern.java.Log;
 import net.silthus.mcgamelib.Game;
 import net.silthus.mcgamelib.MCGameLib;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.Listener;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static net.silthus.mcgamelib.event.EventHelper.extractPlayerFromEvent;
 
 @Log
 public class GameEventHandler implements Listener {
@@ -121,6 +121,8 @@ public class GameEventHandler implements Listener {
             constructor.setAccessible(true);
             return constructor.newInstance();
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            log.warning("unable to create instance of game event filter for: "
+                    + filterClass.getCanonicalName() + ": " + e.getMessage());
             e.printStackTrace();
             return null;
         }

@@ -17,6 +17,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.server.ServerLoadEvent;
@@ -412,6 +413,14 @@ public class GameEventHandlerTests extends TestBase {
                     .isEqualTo(true);
             verify(listener).onPlaceBlock(event);
         }
+
+        @Test
+        void shouldCatchErrorsAtFilterInstantiation() {
+
+            callEvent(new ServerLoadEvent(ServerLoadEvent.LoadType.RELOAD));
+
+            verify(listener).onErrorFilter(any());
+        }
     }
 
     static class CustomFilterListener implements Listener {
@@ -425,6 +434,11 @@ public class GameEventHandlerTests extends TestBase {
         public void onPlaceBlock(BlockPlaceEvent event) {
             event.setCancelled(true);
         }
+
+        @GameEvent(filters = {ErrorFilter.class})
+        public void onErrorFilter(ServerLoadEvent event) {
+
+        }
     }
 
     public static class CustomFilter implements GameEventFilter {
@@ -432,6 +446,16 @@ public class GameEventHandlerTests extends TestBase {
         @Override
         public boolean test(GameEventListener listener, Event event) {
             return true;
+        }
+    }
+
+    private static class ErrorFilter implements GameEventFilter {
+        private ErrorFilter() {
+        }
+
+        @Override
+        public boolean test(GameEventListener listener, Event event) {
+            return false;
         }
     }
 }

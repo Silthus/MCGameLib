@@ -90,7 +90,7 @@ public class GameModeTests extends TestBase {
     void minPlayers_defaultsToZero() {
 
         assertThat(gameMode.getMinPlayers())
-                .isZero();
+                .isEqualTo(-1);
     }
 
     @Test

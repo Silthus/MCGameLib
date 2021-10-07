@@ -1,9 +1,12 @@
 package net.silthus.mcgamelib;
 
-import org.bukkit.event.player.PlayerJoinEvent;
+import net.silthus.mcgamelib.event.GameEventHandler;
+import org.bukkit.event.Listener;
 import org.junit.jupiter.api.Test;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.Mockito.*;
 
 public class MCGameLibTests extends TestBase {
 
@@ -15,11 +18,31 @@ public class MCGameLibTests extends TestBase {
     }
 
     @Test
-    public void shouldFirePlayerJoinEvent() {
+    void onEnable_setsPluginInstanceVariable() {
 
-        server.addPlayer();
-
-        server.getPluginManager().assertEventFired(PlayerJoinEvent.class);
+        assertThat(MCGameLib.instance())
+                .isNotNull()
+                .isEqualTo(plugin);
     }
 
+    @Test
+    void onEnable_creates_ServiceInstances() {
+
+        assertThat(plugin)
+                .extracting(MCGameLib::getGameEventHandler)
+                .isNotNull();
+    }
+
+    @Test
+    void registerEvents_delegatesTo_GameEventHandler() {
+
+        GameEventHandler eventHandler = mock(GameEventHandler.class);
+        plugin.setGameEventHandler(eventHandler);
+
+        Game game = new Game(GameMode.builder().build());
+        Listener listener = new Listener() {};
+        plugin.registerEvents(game, listener);
+
+        verify(eventHandler).registerEvents(game, listener);
+    }
 }

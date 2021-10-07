@@ -1,7 +1,9 @@
 package net.silthus.mcgamelib;
 
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
+import net.silthus.mcgamelib.event.GameEventHandler;
 import org.bukkit.ChatColor;
+import org.bukkit.event.Listener;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -12,6 +14,8 @@ import org.junit.jupiter.params.provider.ValueSource;
 import java.util.ArrayList;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 public class GameTests extends TestBase {
 
@@ -81,6 +85,39 @@ public class GameTests extends TestBase {
         game.start();
 
         assertThat(game.getState()).isEqualTo(GameState.STARTED);
+    }
+
+    @Test
+    void start_withMissingPlayers_throws() {
+
+        game = new Game(GameMode.builder().minPlayers(5).build());
+        assertThatExceptionOfType(GameException.class)
+                .isThrownBy(() -> game.start());
+    }
+
+    @Test
+    void start_withMinimumPlayers_succeeds() {
+
+        game = new Game(GameMode.builder().minPlayers(2).build());
+        game.join(server.addPlayer());
+        game.join(server.addPlayer());
+
+        assertThatCode(() -> game.start())
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    void canStart_isTrue() {
+
+        assertThat(game.canStart()).isTrue();
+    }
+
+    @Test
+    void canStart_isFalse_ifPlayersAreMissing() {
+
+        game = new Game(GameMode.builder().minPlayers(1).build());
+
+        assertThat(game.canStart()).isFalse();
     }
 
     @Test
@@ -351,6 +388,24 @@ public class GameTests extends TestBase {
         assertThat(game.score(player)).isZero();
     }
 
+    @Test
+    void registerEvents_delegatesTo_EventHandler() {
+
+        GameEventHandler gameEventHandler = mock(GameEventHandler.class);
+        plugin.setGameEventHandler(gameEventHandler);
+
+        Listener listener = new Listener() {};
+        game.registerEvents(listener);
+
+        verify(gameEventHandler).registerEvents(game, listener);
+    }
+
+    @Test
+    void canJoin_defaultsToTrue() {
+
+        assertThat(game.canJoin()).isTrue();
+    }
+
     @Nested
     @DisplayName("with GameMode")
     class WithGameMode {
@@ -365,13 +420,13 @@ public class GameTests extends TestBase {
         }
 
         @Test
-        void canJoin() {
+        void cannotJoin_withMaxPlayersReached() {
 
             game = new Game(GameMode.builder().maxPlayers(2).build());
             game.join(server.addPlayer());
             game.join(server.addPlayer());
 
-            assertThat(game.canJoin()).isTrue();
+            assertThat(game.canJoin()).isFalse();
         }
 
         @Test
