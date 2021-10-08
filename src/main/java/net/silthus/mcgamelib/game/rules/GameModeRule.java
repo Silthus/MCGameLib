@@ -2,10 +2,13 @@ package net.silthus.mcgamelib.game.rules;
 
 import lombok.Getter;
 import lombok.Setter;
+import net.silthus.configmapper.ConfigOption;
+import net.silthus.configmapper.bukkit.BukkitConfigMap;
 import net.silthus.mcgamelib.event.GameEvent;
 import net.silthus.mcgamelib.events.PlayerJoinedGameEvent;
 import net.silthus.mcgamelib.events.PlayerQuitGameEvent;
 import org.bukkit.GameMode;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
@@ -17,7 +20,14 @@ import java.util.UUID;
 public class GameModeRule implements GameRule {
 
     private final Map<UUID, GameMode> oldGameModes = new HashMap<>();
+    @ConfigOption
     private GameMode gameMode = GameMode.SURVIVAL;
+
+    public static GameModeRule loadFrom(ConfigurationSection configuration) {
+        return BukkitConfigMap.of(GameModeRule.class)
+                .with(configuration)
+                .applyTo(new GameModeRule());
+    }
 
     @GameEvent
     public void onPlayerJoin(PlayerJoinedGameEvent event) {

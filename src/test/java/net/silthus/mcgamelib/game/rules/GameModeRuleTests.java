@@ -6,6 +6,7 @@ import net.silthus.mcgamelib.GameMode;
 import net.silthus.mcgamelib.TestBase;
 import net.silthus.mcgamelib.events.PlayerJoinedGameEvent;
 import net.silthus.mcgamelib.events.PlayerQuitGameEvent;
+import org.bukkit.configuration.MemoryConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -66,5 +67,16 @@ public class GameModeRuleTests extends TestBase {
         assertThatCode(() -> rule.onPlayerQuit(new PlayerQuitGameEvent(game, player)))
                 .doesNotThrowAnyException();
         assertThat(player.getGameMode()).isEqualTo(gameMode);
+    }
+
+    @Test
+    void loadWithConfig() {
+
+        MemoryConfiguration cfg = new MemoryConfiguration();
+        cfg.set("gamemode", "creative");
+        GameModeRule rule = GameModeRule.loadFrom(cfg);
+
+        assertThat(rule.getGameMode())
+                .isEqualTo(org.bukkit.GameMode.CREATIVE);
     }
 }
