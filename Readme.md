@@ -1,8 +1,8 @@
-# MCGames
+# MCGameLib
 
-[![Build Status](https://github.com/Silthus/MCGames/workflows/Build/badge.svg)](../../actions?query=workflow%3ABuild)
-[![GitHub release (latest SemVer including pre-releases)](https://img.shields.io/github/v/release/Silthus/MCGames?include_prereleases&label=release)](../../releases)
-[![codecov](https://codecov.io/gh/Silthus/MCGames/branch/master/graph/badge.svg)](https://codecov.io/gh/Silthus/MCGames)
+[![Build Status](https://github.com/Silthus/MCGameLib/workflows/Build/badge.svg)](../../actions?query=workflow%3ABuild)
+[![GitHub release (latest SemVer including pre-releases)](https://img.shields.io/github/v/release/Silthus/MCGameLib?include_prereleases&label=release)](../../releases)
+[![codecov](https://codecov.io/gh/Silthus/MCGameLib/branch/master/graph/badge.svg)](https://codecov.io/gh/Silthus/MCGameLib)
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
 [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
 
