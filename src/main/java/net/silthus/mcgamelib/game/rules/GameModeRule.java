@@ -19,9 +19,9 @@ import java.util.UUID;
 @Getter
 public class GameModeRule implements GameRule {
 
-    private final Map<UUID, GameMode> oldGameModes = new HashMap<>();
     @ConfigOption
-    private GameMode gameMode = GameMode.SURVIVAL;
+    private GameMode gamemode = GameMode.SURVIVAL;
+    private final Map<UUID, GameMode> oldGameModes = new HashMap<>();
 
     public static GameModeRule loadFrom(ConfigurationSection configuration) {
         return BukkitConfigMap.of(GameModeRule.class)
@@ -32,7 +32,7 @@ public class GameModeRule implements GameRule {
     @GameEvent
     public void onPlayerJoin(PlayerJoinedGameEvent event) {
         Player player = event.getPlayer();
-        updateGameMode(player, gameMode);
+        updateGameMode(player, gamemode);
     }
 
     @GameEvent

@@ -26,7 +26,7 @@ public class GameModeRuleTests extends TestBase {
         rule = new GameModeRule();
         game = new Game(GameMode.builder().build());
 
-        rule.setGameMode(org.bukkit.GameMode.CREATIVE);
+        rule.setGamemode(org.bukkit.GameMode.CREATIVE);
     }
 
     @Test
@@ -53,7 +53,7 @@ public class GameModeRuleTests extends TestBase {
         org.bukkit.GameMode oldGameMode = player.getGameMode();
 
         rule.onPlayerJoin(new PlayerJoinedGameEvent(game, player));
-        assertThat(player.getGameMode()).isEqualTo(rule.getGameMode());
+        assertThat(player.getGameMode()).isEqualTo(rule.getGamemode());
         rule.onPlayerQuit(new PlayerQuitGameEvent(game, player));
         assertThat(player.getGameMode()).isEqualTo(oldGameMode);
     }
@@ -76,7 +76,7 @@ public class GameModeRuleTests extends TestBase {
         cfg.set("gamemode", "creative");
         GameModeRule rule = GameModeRule.loadFrom(cfg);
 
-        assertThat(rule.getGameMode())
+        assertThat(rule.getGamemode())
                 .isEqualTo(org.bukkit.GameMode.CREATIVE);
     }
 }
