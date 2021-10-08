@@ -1,18 +1,14 @@
 package net.silthus.mcgamelib.events;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.NonNull;
 import net.silthus.mcgamelib.Game;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
 
-@Getter
-@Setter
-public class JoinGameEvent extends PlayerGameEvent implements Cancellable {
+public class PlayerQuitGameEvent extends PlayerGameEvent {
 
-    private boolean cancelled;
-
-    public JoinGameEvent(Game game, Player player) {
+    public PlayerQuitGameEvent(Game game, Player player) {
         super(game, player);
     }
 

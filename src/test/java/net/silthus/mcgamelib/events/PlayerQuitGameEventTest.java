@@ -12,15 +12,14 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 
-class QuitGameEventTest extends TestBase {
+class PlayerQuitGameEventTest extends TestBase {
 
     private Game game;
     private EventListener listener;
-    private ArgumentCaptor<QuitGameEvent> onQuitGame = ArgumentCaptor.forClass(QuitGameEvent.class);
+    private ArgumentCaptor<PlayerQuitGameEvent> onQuitGame = ArgumentCaptor.forClass(PlayerQuitGameEvent.class);
 
     @BeforeEach
     public void setUp() {
@@ -37,8 +36,8 @@ class QuitGameEventTest extends TestBase {
         PlayerMock player = server.addPlayer();
         Game game = new Game(GameMode.builder().build());
 
-        QuitGameEvent event1 = new QuitGameEvent(game, player);
-        QuitGameEvent event2 = new QuitGameEvent(game, player);
+        PlayerQuitGameEvent event1 = new PlayerQuitGameEvent(game, player);
+        PlayerQuitGameEvent event2 = new PlayerQuitGameEvent(game, player);
 
         assertThat(event1.equals(event2)).isFalse();
     }
@@ -51,12 +50,12 @@ class QuitGameEventTest extends TestBase {
         game.quit(player);
 
         verify(listener).onQuitgame(onQuitGame.capture());
-        QuitGameEvent quitGameEvent = onQuitGame.getValue();
+        PlayerQuitGameEvent quitGameEvent = onQuitGame.getValue();
 
         assertThat(quitGameEvent)
                 .extracting(
-                        QuitGameEvent::getGame,
-                        QuitGameEvent::getPlayer
+                        PlayerQuitGameEvent::getGame,
+                        PlayerQuitGameEvent::getPlayer
                 ).contains(
                         game,
                         player
@@ -66,7 +65,7 @@ class QuitGameEventTest extends TestBase {
     static class EventListener implements Listener {
 
         @EventHandler
-        public void onQuitgame(QuitGameEvent event) {
+        public void onQuitgame(PlayerQuitGameEvent event) {
 
         }
     }

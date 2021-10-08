@@ -1,6 +1,8 @@
 package net.silthus.mcgamelib.event;
 
-import net.silthus.mcgamelib.event.filters.Playing;
+import net.silthus.mcgamelib.event.filters.GameEventFilter;
+import net.silthus.mcgamelib.event.filters.players.Playing;
+import net.silthus.mcgamelib.event.filters.players.Spectating;
 import org.bukkit.event.EventPriority;
 
 import java.lang.annotation.ElementType;
@@ -59,7 +61,7 @@ public @interface GameEvent {
      * <p>By default the event is only called for {@link org.bukkit.entity.Player}s
      * that are currently playing the game.
      * <p>You can overwrite this to only get notified of spectators
-     * by using the {@link net.silthus.mcgamelib.event.filters.Spectating} filter.
+     * by using the {@link Spectating} filter.
      * <pre>{@code
      * @GameEvent(filters = {SpectatorFilter.class})
      * public void onPlayerDamage(PlayerDamageEvent event) {

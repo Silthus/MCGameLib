@@ -84,7 +84,7 @@ public class GameTests extends TestBase {
 
         game.start();
 
-        assertThat(game.getState()).isEqualTo(GameState.STARTED);
+        assertThat(game.getState()).isEqualTo(GameState.IN_PROGRESS);
     }
 
     @Test
@@ -404,6 +404,28 @@ public class GameTests extends TestBase {
     void canJoin_defaultsToTrue() {
 
         assertThat(game.canJoin()).isTrue();
+    }
+
+    @Test
+    void isInProgress_returnsFalse_ifGameNotStarted() {
+
+        assertThat(game.isInProgress()).isFalse();
+    }
+
+    @Test
+    void isInProgress_returnsTrue_ifGameStarted() {
+
+        game.start();
+        assertThat(game.isInProgress()).isTrue();
+    }
+
+    @Test
+    void isInProgress_returnsFalse_ifGameStopped() {
+
+        game.start();
+        game.stop();
+
+        assertThat(game.isInProgress()).isFalse();
     }
 
     @Nested

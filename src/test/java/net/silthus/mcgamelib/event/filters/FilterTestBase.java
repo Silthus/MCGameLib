@@ -5,16 +5,16 @@ import net.silthus.mcgamelib.Game;
 import net.silthus.mcgamelib.GameMode;
 import net.silthus.mcgamelib.TestBase;
 import net.silthus.mcgamelib.event.GameEventListener;
-import net.silthus.mcgamelib.events.JoinedGameEvent;
+import net.silthus.mcgamelib.events.PlayerJoinedGameEvent;
 import org.junit.jupiter.api.BeforeEach;
 
 import java.util.ArrayList;
 
-public class FilterTest extends TestBase {
+public abstract class FilterTestBase extends TestBase {
     protected Game game;
     protected GameEventListener listener;
     protected PlayerMock player;
-    protected JoinedGameEvent event;
+    protected PlayerJoinedGameEvent event;
 
     @Override
     @BeforeEach
@@ -24,6 +24,6 @@ public class FilterTest extends TestBase {
         game = new Game(GameMode.builder().build());
         listener = new GameEventListener(game, null, null, null, null, new ArrayList<>());
         player = server.addPlayer();
-        event = new JoinedGameEvent(game, player);
+        event = new PlayerJoinedGameEvent(game, player);
     }
 }

@@ -1,15 +1,14 @@
 package net.silthus.mcgamelib.events;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
 import net.silthus.mcgamelib.Game;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 
-public class JoinedGameEvent extends PlayerGameEvent {
+public class PlayerJoinedGameEvent extends PlayerGameEvent {
 
-    public JoinedGameEvent(Game game, Player player) {
+    public PlayerJoinedGameEvent(Game game, Player player) {
         super(game, player);
     }
 

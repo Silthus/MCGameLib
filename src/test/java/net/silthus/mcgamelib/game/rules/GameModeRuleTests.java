@@ -4,8 +4,8 @@ import be.seeseemelk.mockbukkit.entity.PlayerMock;
 import net.silthus.mcgamelib.Game;
 import net.silthus.mcgamelib.GameMode;
 import net.silthus.mcgamelib.TestBase;
-import net.silthus.mcgamelib.events.JoinedGameEvent;
-import net.silthus.mcgamelib.events.QuitGameEvent;
+import net.silthus.mcgamelib.events.PlayerJoinedGameEvent;
+import net.silthus.mcgamelib.events.PlayerQuitGameEvent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -41,7 +41,7 @@ public class GameModeRuleTests extends TestBase {
         PlayerMock player = server.addPlayer();
         assertThat(player.getGameMode()).isEqualTo(org.bukkit.GameMode.SURVIVAL);
 
-        rule.onPlayerJoin(new JoinedGameEvent(game, player));
+        rule.onPlayerJoin(new PlayerJoinedGameEvent(game, player));
         assertThat(player.getGameMode()).isEqualTo(org.bukkit.GameMode.CREATIVE);
     }
 
@@ -51,9 +51,9 @@ public class GameModeRuleTests extends TestBase {
         PlayerMock player = server.addPlayer();
         org.bukkit.GameMode oldGameMode = player.getGameMode();
 
-        rule.onPlayerJoin(new JoinedGameEvent(game, player));
+        rule.onPlayerJoin(new PlayerJoinedGameEvent(game, player));
         assertThat(player.getGameMode()).isEqualTo(rule.getGameMode());
-        rule.onPlayerQuit(new QuitGameEvent(game, player));
+        rule.onPlayerQuit(new PlayerQuitGameEvent(game, player));
         assertThat(player.getGameMode()).isEqualTo(oldGameMode);
     }
 
@@ -63,7 +63,7 @@ public class GameModeRuleTests extends TestBase {
         PlayerMock player = server.addPlayer();
         org.bukkit.GameMode gameMode = player.getGameMode();
 
-        assertThatCode(() -> rule.onPlayerQuit(new QuitGameEvent(game, player)))
+        assertThatCode(() -> rule.onPlayerQuit(new PlayerQuitGameEvent(game, player)))
                 .doesNotThrowAnyException();
         assertThat(player.getGameMode()).isEqualTo(gameMode);
     }

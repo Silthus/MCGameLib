@@ -1,6 +1,5 @@
 package net.silthus.mcgamelib.events;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import net.silthus.mcgamelib.Game;
 import org.bukkit.entity.Player;

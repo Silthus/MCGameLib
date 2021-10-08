@@ -2,9 +2,9 @@ package net.silthus.mcgamelib;
 
 import lombok.*;
 import lombok.experimental.Accessors;
-import net.silthus.mcgamelib.events.JoinGameEvent;
-import net.silthus.mcgamelib.events.JoinedGameEvent;
-import net.silthus.mcgamelib.events.QuitGameEvent;
+import net.silthus.mcgamelib.events.PlayerJoinGameEvent;
+import net.silthus.mcgamelib.events.PlayerJoinedGameEvent;
+import net.silthus.mcgamelib.events.PlayerQuitGameEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -68,6 +68,10 @@ public class Game {
                 .orElse(false);
     }
 
+    public boolean isInProgress() {
+        return getState() == GameState.IN_PROGRESS;
+    }
+
     public int score(Player player) {
         return getGamePlayer(player)
                 .map(GamePlayer::score)
@@ -86,7 +90,7 @@ public class Game {
             throw new GameException("Cannot start game. Required players: "
                     + getPlayers().size() + "/" + getGameMode().getMinPlayers());
         }
-        setState(GameState.STARTED);
+        setState(GameState.IN_PROGRESS);
     }
 
     public boolean canStart() {
@@ -146,18 +150,18 @@ public class Game {
         return ChatColor.AQUA + "[" + ChatColor.GOLD + getTitle() + ChatColor.AQUA + "] " + ChatColor.RESET;
     }
 
-    private JoinGameEvent fireJoinGameEvent(Player player) {
-        JoinGameEvent joinGameEvent = new JoinGameEvent(this, player);
+    private PlayerJoinGameEvent fireJoinGameEvent(Player player) {
+        PlayerJoinGameEvent joinGameEvent = new PlayerJoinGameEvent(this, player);
         Bukkit.getPluginManager().callEvent(joinGameEvent);
         return joinGameEvent;
     }
 
     private void fireJoinedGameEvent(Player player) {
-        Bukkit.getPluginManager().callEvent(new JoinedGameEvent(this, player));
+        Bukkit.getPluginManager().callEvent(new PlayerJoinedGameEvent(this, player));
     }
 
     private void fireQuitGameEvent(Player player) {
-        Bukkit.getPluginManager().callEvent(new QuitGameEvent(this, player));
+        Bukkit.getPluginManager().callEvent(new PlayerQuitGameEvent(this, player));
     }
 
     @Data

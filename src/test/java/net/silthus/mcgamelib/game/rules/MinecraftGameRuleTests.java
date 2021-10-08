@@ -5,7 +5,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.bukkit.GameRule.*;
+import static org.bukkit.GameRule.DISABLE_RAIDS;
+import static org.bukkit.GameRule.SPAWN_RADIUS;
 
 public class MinecraftGameRuleTests extends TestBase {
 

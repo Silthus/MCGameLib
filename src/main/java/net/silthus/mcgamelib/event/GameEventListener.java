@@ -2,6 +2,7 @@ package net.silthus.mcgamelib.event;
 
 import lombok.NonNull;
 import net.silthus.mcgamelib.Game;
+import net.silthus.mcgamelib.event.filters.GameEventFilter;
 import org.bukkit.event.Event;
 import org.bukkit.event.Listener;
 

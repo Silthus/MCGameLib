@@ -17,11 +17,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
-public class JoinedGameEventTests extends TestBase {
+public class PlayerJoinedGameEventTests extends TestBase {
 
     private Game game;
     private EventListener listener;
-    private ArgumentCaptor<JoinedGameEvent> event = ArgumentCaptor.forClass(JoinedGameEvent.class);
+    private ArgumentCaptor<PlayerJoinedGameEvent> event = ArgumentCaptor.forClass(PlayerJoinedGameEvent.class);
 
     @BeforeEach
     public void setUp() {
@@ -36,8 +36,8 @@ public class JoinedGameEventTests extends TestBase {
     void equals_isNotSame() {
 
         PlayerMock player = server.addPlayer();
-        JoinedGameEvent event1 = new JoinedGameEvent(game, player);
-        JoinedGameEvent event2 = new JoinedGameEvent(game, player);
+        PlayerJoinedGameEvent event1 = new PlayerJoinedGameEvent(game, player);
+        PlayerJoinedGameEvent event2 = new PlayerJoinedGameEvent(game, player);
 
         assertThat(event1.equals(event2)).isFalse();
     }
@@ -53,8 +53,8 @@ public class JoinedGameEventTests extends TestBase {
         verify(listener).onJoinedGame(event.capture());
         assertThat(event.getValue())
                 .extracting(
-                        JoinedGameEvent::getGame,
-                        JoinedGameEvent::getPlayer
+                        PlayerJoinedGameEvent::getGame,
+                        PlayerJoinedGameEvent::getPlayer
                 ).contains(
                         game,
                         player
@@ -63,10 +63,10 @@ public class JoinedGameEventTests extends TestBase {
 
     static class EventListener implements Listener {
 
-        private Consumer<JoinedGameEvent> asserts = joinedGameEvent -> {};
+        private Consumer<PlayerJoinedGameEvent> asserts = joinedGameEvent -> {};
 
         @EventHandler
-        public void onJoinedGame(JoinedGameEvent event) {
+        public void onJoinedGame(PlayerJoinedGameEvent event) {
             asserts.accept(event);
         }
     }

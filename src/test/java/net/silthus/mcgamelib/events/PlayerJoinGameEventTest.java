@@ -11,18 +11,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
-import java.util.function.Consumer;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-class JoinGameEventTest extends TestBase {
+class PlayerJoinGameEventTest extends TestBase {
 
     private Game game;
     private EventListener listener;
-    private ArgumentCaptor<JoinGameEvent> onJoinGame = ArgumentCaptor.forClass(JoinGameEvent.class);
+    private ArgumentCaptor<PlayerJoinGameEvent> onJoinGame = ArgumentCaptor.forClass(PlayerJoinGameEvent.class);
 
     @BeforeEach
     public void setUp() {
@@ -39,8 +37,8 @@ class JoinGameEventTest extends TestBase {
         PlayerMock player = server.addPlayer();
         Game game = new Game(GameMode.builder().build());
 
-        JoinGameEvent event1 = new JoinGameEvent(game, player);
-        JoinGameEvent event2 = new JoinGameEvent(game, player);
+        PlayerJoinGameEvent event1 = new PlayerJoinGameEvent(game, player);
+        PlayerJoinGameEvent event2 = new PlayerJoinGameEvent(game, player);
 
         assertThat(event1.equals(event2)).isFalse();
     }
@@ -52,12 +50,12 @@ class JoinGameEventTest extends TestBase {
         game.join(player);
 
         verify(listener).onJoinGame(onJoinGame.capture());
-        JoinGameEvent joinGameEvent = onJoinGame.getValue();
+        PlayerJoinGameEvent joinGameEvent = onJoinGame.getValue();
 
         assertThat(joinGameEvent)
                 .extracting(
-                        JoinGameEvent::getGame,
-                        JoinGameEvent::getPlayer
+                        PlayerJoinGameEvent::getGame,
+                        PlayerJoinGameEvent::getPlayer
                 ).contains(
                         game,
                         player
@@ -74,7 +72,7 @@ class JoinGameEventTest extends TestBase {
 
         verify(listener).onJoinGame(onJoinGame.capture());
         assertThat(onJoinGame.getValue())
-                .extracting(JoinGameEvent::isCancelled)
+                .extracting(PlayerJoinGameEvent::isCancelled)
                 .isEqualTo(true);
 
         assertThat(game.getPlayers()).isEmpty();
@@ -87,7 +85,7 @@ class JoinGameEventTest extends TestBase {
         PlayerMock player1 = server.addPlayer();
         game.join(player1);
         doAnswer(invocation -> {
-            Game game = ((JoinGameEvent) invocation.getArgument(0)).getGame();
+            Game game = ((PlayerJoinGameEvent) invocation.getArgument(0)).getGame();
             game.quit(player1);
             return invocation;
         }).when(listener).onJoinGame(any());
@@ -104,7 +102,7 @@ class JoinGameEventTest extends TestBase {
         boolean cancelJoinGame = false;
 
         @EventHandler
-        public void onJoinGame(JoinGameEvent event) {
+        public void onJoinGame(PlayerJoinGameEvent event) {
             event.setCancelled(cancelJoinGame);
         }
     }

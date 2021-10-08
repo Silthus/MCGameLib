@@ -2,11 +2,8 @@ package net.silthus.mcgamelib.game.rules;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Singular;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Getter

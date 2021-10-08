@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.extern.java.Log;
 import net.silthus.mcgamelib.Game;
 import net.silthus.mcgamelib.MCGameLib;
+import net.silthus.mcgamelib.event.filters.Filter;
+import net.silthus.mcgamelib.event.filters.GameEventFilter;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
 import org.bukkit.event.Listener;
@@ -11,10 +13,7 @@ import org.bukkit.event.Listener;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -97,22 +96,30 @@ public class GameEventHandler implements Listener {
 
     @SuppressWarnings("unchecked")
     private GameEventListener createGameEventListener(Game game, Listener listener, Method method) {
-        GameEvent annotation = method.getAnnotation(GameEvent.class);
         return new GameEventListener(
                 game,
                 listener,
                 (Class<? extends Event>) method.getParameterTypes()[0],
                 method,
-                annotation,
-                getGameEventFilters(annotation)
+                method.getAnnotation(GameEvent.class),
+                getGameEventFilters(method)
         );
     }
 
-    private List<? extends GameEventFilter> getGameEventFilters(GameEvent annotation) {
-        return Arrays.stream(annotation.filters())
+    private List<? extends GameEventFilter> getGameEventFilters(Method method) {
+        return Stream.concat(
+                Optional.ofNullable(method.getDeclaringClass()
+                                .getAnnotation(Filter.class))
+                        .stream()
+                        .flatMap(filter -> createFilterInstances(filter.value())),
+                createFilterInstances(method.getAnnotation(GameEvent.class).filters())
+        ).collect(Collectors.toList());
+    }
+
+    private Stream<? extends GameEventFilter> createFilterInstances(Class<? extends GameEventFilter>[] filterClasses) {
+        return Arrays.stream(filterClasses)
                 .map(this::createFilterInstance)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+                .filter(Objects::nonNull);
     }
 
     private GameEventFilter createFilterInstance(Class<? extends GameEventFilter> filterClass) {

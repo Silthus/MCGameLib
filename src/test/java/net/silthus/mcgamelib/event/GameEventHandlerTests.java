@@ -6,10 +6,11 @@ import lombok.NonNull;
 import net.silthus.mcgamelib.Game;
 import net.silthus.mcgamelib.GameMode;
 import net.silthus.mcgamelib.TestBase;
-import net.silthus.mcgamelib.event.filters.Playing;
-import net.silthus.mcgamelib.event.filters.Spectating;
-import net.silthus.mcgamelib.events.JoinGameEvent;
-import net.silthus.mcgamelib.events.JoinedGameEvent;
+import net.silthus.mcgamelib.event.filters.GameEventFilter;
+import net.silthus.mcgamelib.event.filters.players.Playing;
+import net.silthus.mcgamelib.event.filters.players.Spectating;
+import net.silthus.mcgamelib.events.PlayerJoinGameEvent;
+import net.silthus.mcgamelib.events.PlayerJoinedGameEvent;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -17,7 +18,6 @@ import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.server.ServerLoadEvent;
@@ -33,8 +33,8 @@ import static org.mockito.Mockito.*;
 
 public class GameEventHandlerTests extends TestBase {
 
-    private final ArgumentCaptor<JoinGameEvent> joinGameEvent = ArgumentCaptor.forClass(JoinGameEvent.class);
-    private final ArgumentCaptor<JoinedGameEvent> joinedGameEvent = ArgumentCaptor.forClass(JoinedGameEvent.class);
+    private final ArgumentCaptor<PlayerJoinGameEvent> joinGameEvent = ArgumentCaptor.forClass(PlayerJoinGameEvent.class);
+    private final ArgumentCaptor<PlayerJoinedGameEvent> joinedGameEvent = ArgumentCaptor.forClass(PlayerJoinedGameEvent.class);
 
     private GameEventHandler eventHandler;
     private Game game;
@@ -165,7 +165,7 @@ public class GameEventHandlerTests extends TestBase {
                     ).contains(
                             listener,
                             game,
-                            JoinedGameEvent.class
+                            PlayerJoinedGameEvent.class
                     );
             assertThat(eventHandler.getListeners().get(0).filters())
                     .hasSize(1)
@@ -289,7 +289,7 @@ public class GameEventHandlerTests extends TestBase {
     static class SingleEventListener implements Listener {
 
         @GameEvent
-        public void onJoinedGameEvent(JoinedGameEvent event) {
+        public void onJoinedGameEvent(PlayerJoinedGameEvent event) {
 
         }
 
@@ -302,17 +302,17 @@ public class GameEventHandlerTests extends TestBase {
     static class MultiEventListener implements Listener {
 
         @GameEvent(ignoreFilters = true)
-        public void onJoinGameEvent(JoinGameEvent event) {
+        public void onJoinGameEvent(PlayerJoinGameEvent event) {
 
         }
 
         @GameEvent
-        public void onJoinedGameEvent(JoinedGameEvent event) {
+        public void onJoinedGameEvent(PlayerJoinedGameEvent event) {
 
         }
 
         @GameEvent
-        public void onJoinedGameEventTwo(JoinedGameEvent event) {
+        public void onJoinedGameEventTwo(PlayerJoinedGameEvent event) {
 
         }
 
@@ -325,7 +325,7 @@ public class GameEventHandlerTests extends TestBase {
     static class IgnoreFilterEventListener implements Listener {
 
         @GameEvent(ignoreFilters = true)
-        public void onJoinGameEvent(JoinGameEvent event) {
+        public void onJoinGameEvent(PlayerJoinGameEvent event) {
 
         }
     }
@@ -395,7 +395,7 @@ public class GameEventHandlerTests extends TestBase {
         @Test
         void should_apply_customFilter() {
 
-            callEvent(new JoinedGameEvent(game, server.addPlayer()));
+            callEvent(new PlayerJoinedGameEvent(game, server.addPlayer()));
 
             verify(listener).onJoinedGame(any());
         }
@@ -426,7 +426,7 @@ public class GameEventHandlerTests extends TestBase {
     static class CustomFilterListener implements Listener {
 
         @GameEvent(filters = {CustomFilter.class})
-        public void onJoinedGame(JoinedGameEvent event) {
+        public void onJoinedGame(PlayerJoinedGameEvent event) {
 
         }
 
@@ -444,7 +444,7 @@ public class GameEventHandlerTests extends TestBase {
     public static class CustomFilter implements GameEventFilter {
 
         @Override
-        public boolean test(GameEventListener listener, Event event) {
+        public boolean test(@NonNull GameEventListener listener, @NonNull Event event) {
             return true;
         }
     }
@@ -454,7 +454,7 @@ public class GameEventHandlerTests extends TestBase {
         }
 
         @Override
-        public boolean test(GameEventListener listener, Event event) {
+        public boolean test(@NonNull GameEventListener listener, @NonNull Event event) {
             return false;
         }
     }

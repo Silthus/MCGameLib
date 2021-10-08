@@ -1,5 +1,6 @@
-package net.silthus.mcgamelib.event.filters;
+package net.silthus.mcgamelib.event.filters.players;
 
+import net.silthus.mcgamelib.event.filters.FilterTestBase;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.server.ServerLoadEvent;
 import org.junit.jupiter.api.BeforeEach;
@@ -7,7 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class SpectatingTest extends FilterTest {
+class SpectatingTests extends FilterTestBase {
 
     private Spectating filter;
 
