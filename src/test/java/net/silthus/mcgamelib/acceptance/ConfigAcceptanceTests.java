@@ -2,6 +2,7 @@ package net.silthus.mcgamelib.acceptance;
 
 import net.silthus.mcgamelib.GameMode;
 import net.silthus.mcgamelib.TestBase;
+import net.silthus.mcgamelib.game.ConfiguredGameRule;
 import net.silthus.mcgamelib.game.rules.GamemodeGameRule;
 import net.silthus.mcgamelib.game.rules.MaxHealthGameRule;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -13,6 +14,7 @@ import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@SuppressWarnings("ALL")
 public class ConfigAcceptanceTests extends TestBase {
 
     @Test
@@ -36,9 +38,10 @@ public class ConfigAcceptanceTests extends TestBase {
                         2,
                         10
                 );
-        assertThat(gameMode.getRules())
+        assertThat(gameMode.getRules().stream()
+                .map(rule -> (Class) rule.getRuleClass()))
                 .hasSize(2)
-                .containsKeys(
+                .contains(
                         MaxHealthGameRule.class,
                         GamemodeGameRule.class
                 );

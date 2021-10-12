@@ -3,14 +3,13 @@ package net.silthus.mcgamelib;
 import lombok.*;
 import net.silthus.configmapper.ConfigOption;
 import net.silthus.configmapper.bukkit.BukkitConfigMap;
+import net.silthus.mcgamelib.game.ConfiguredGameRule;
 import net.silthus.mcgamelib.game.GameRule;
 import net.silthus.mcgamelib.game.GameRuleRegistry;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.MemoryConfiguration;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -47,7 +46,7 @@ public final class GameMode {
 
     @Builder.Default
     @With
-    private Map<Class<? extends GameRule>, Consumer<? extends GameRule>> rules = new HashMap<>();
+    private Set<ConfiguredGameRule<?>> rules = new HashSet<>();
 
     public boolean hasMaxPlayerLimit() {
         return maxPlayers > 0;
@@ -79,23 +78,18 @@ public final class GameMode {
         return withRules(applyConfigToRules(builder.build().getRules(), rules));
     }
 
-    private Map<Class<? extends GameRule>, Consumer<? extends GameRule>> applyConfigToRules(Map<Class<? extends GameRule>, Consumer<? extends GameRule>> rules, ConfigurationSection config) {
+    private Set<ConfiguredGameRule<?>> applyConfigToRules(Collection<ConfiguredGameRule<?>> rules, ConfigurationSection config) {
         Map<String, ConfigurationSection> ruleConfigs = mapConfigToRuleConfigMap(config);
-        return rules.entrySet().stream()
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        entry -> configureRule(ruleConfigs, entry)
-                ));
+        return rules.stream()
+                .map(configuredGameRule -> {
+                    ConfigurationSection ruleConfig = ruleConfigs.get(configuredGameRule.getName());
+                    return configureRule(configuredGameRule, ruleConfig);
+                }).collect(Collectors.toSet());
     }
 
-    private Consumer<? extends GameRule> configureRule(Map<String, ConfigurationSection> ruleConfigs, Map.Entry<Class<? extends GameRule>, Consumer<? extends GameRule>> entry) {
-        return entry.getValue().andThen(gameRule -> {
-            ConfigurationSection config = ruleConfigs.get(GameRule.getName(entry.getKey()));
-            if (config == null) return;
-            BukkitConfigMap.of(gameRule)
-                    .with(config)
-                    .apply();
-        });
+    private ConfiguredGameRule<?> configureRule(ConfiguredGameRule<?> rule, ConfigurationSection config) {
+        if (config == null) return rule;
+        return rule.withConfig(config);
     }
 
     private Map<String, ConfigurationSection> mapConfigToRuleConfigMap(ConfigurationSection config) {
@@ -161,8 +155,11 @@ public final class GameMode {
 
         public <TRule extends GameRule> GameModeBuilder rule(Class<TRule> ruleClass, Consumer<TRule> rule) {
             if (!rules$set)
-                rules$value = new HashMap<>();
-            rules$value.put(ruleClass, rule);
+                rules$value = new HashSet<>();
+            rules$value.add(new ConfiguredGameRule<>(
+                    ruleClass,
+                    rule
+            ));
             rules$set = true;
             return this;
         }

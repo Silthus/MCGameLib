@@ -63,9 +63,13 @@ public class GameRuleRegistry {
         gameRuleSuppliers.put(ruleClass, supplier);
     }
 
-    @SuppressWarnings("unchecked")
     public <TRule extends GameRule> TRule create(Class<TRule> ruleClass) {
-        return (TRule) gameRuleSuppliers.get(ruleClass).get();
+        return getSupplier(ruleClass).get();
+    }
+
+    @SuppressWarnings("unchecked")
+    public <TRule extends GameRule> Supplier<TRule> getSupplier(Class<TRule> ruleClass) {
+        return (Supplier<TRule>) gameRuleSuppliers.get(ruleClass);
     }
 
     public Optional<Class<? extends GameRule>> getByName(String name) {

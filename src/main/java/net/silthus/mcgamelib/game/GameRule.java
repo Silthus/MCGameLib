@@ -8,7 +8,8 @@ import net.silthus.mcgamelib.game.rules.MinecraftGameRule;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.Listener;
 
-import java.util.Set;
+import java.util.*;
+import java.util.function.Consumer;
 
 public interface GameRule extends Listener {
 
@@ -28,6 +29,10 @@ public interface GameRule extends Listener {
         return BukkitConfigMap.of(rule)
                 .with(config)
                 .apply();
+    }
+
+    static List<GameRule> loadRules(Map<Class<? extends GameRule>, Consumer<? extends GameRule>> ruleMap) {
+        return new ArrayList<>();
     }
 
     static String getName(@NonNull Class<? extends GameRule> gameRuleClass) {

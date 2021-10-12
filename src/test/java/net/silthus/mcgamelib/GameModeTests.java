@@ -1,5 +1,6 @@
 package net.silthus.mcgamelib;
 
+import net.silthus.mcgamelib.game.ConfiguredGameRule;
 import net.silthus.mcgamelib.game.rules.GamemodeGameRule;
 import net.silthus.mcgamelib.game.rules.MaxHealthGameRule;
 import org.bukkit.configuration.MemoryConfiguration;
@@ -10,14 +11,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import java.security.Guard;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 
 @SuppressWarnings("ALL")
 public class GameModeTests extends TestBase {
@@ -267,9 +266,10 @@ public class GameModeTests extends TestBase {
                         5,
                         -1
                 );
-        assertThat(gameMode.getRules())
+        assertThat(gameMode.getRules().stream()
+                .map(rule -> (Class) rule.getRuleClass()))
                 .hasSize(2)
-                .containsKeys(
+                .contains(
                         GamemodeGameRule.class,
                         MaxHealthGameRule.class
                 );
@@ -316,9 +316,10 @@ public class GameModeTests extends TestBase {
                     .rule(MaxHealthGameRule.class)
                     .build();
 
-            assertThat(gameMode.getRules())
+            assertThat(gameMode.getRules().stream()
+                    .map(rule -> (Class) rule.getRuleClass()))
                     .hasSize(1)
-                    .containsOnlyKeys(MaxHealthGameRule.class);
+                    .containsOnly(MaxHealthGameRule.class);
         }
 
         @Test
@@ -331,9 +332,8 @@ public class GameModeTests extends TestBase {
 
             assertThat(gameMode.getRules())
                     .hasSize(1)
-                    .containsOnly(
-                            entry(MaxHealthGameRule.class, ruleConfig)
-                    );
+                    .extracting(ConfiguredGameRule::getValues)
+                    .containsOnly((Consumer) ruleConfig);
         }
 
         @Test
@@ -344,9 +344,10 @@ public class GameModeTests extends TestBase {
                     .rule(MaxHealthGameRule.class, maxHealthRule -> maxHealthRule.setMaxHealth(30d))
                     .build();
 
-            assertThat(gameMode.getRules())
+            assertThat(gameMode.getRules().stream()
+                    .map(rule -> (Class) rule.getRuleClass()))
                     .hasSize(2)
-                    .containsKeys(GamemodeGameRule.class, MaxHealthGameRule.class);
+                    .contains(GamemodeGameRule.class, MaxHealthGameRule.class);
         }
     }
 
@@ -416,9 +417,13 @@ public class GameModeTests extends TestBase {
                             10,
                             20
                     );
-            assertThat(configured.getRules()).hasSize(1).containsKeys(MaxHealthGameRule.class);
+            assertThat(configured.getRules().stream()
+                    .map(rule -> (Class) rule.getRuleClass()))
+                    .hasSize(1)
+                    .contains(MaxHealthGameRule.class);
 
-            Consumer<MaxHealthGameRule> consumer = (Consumer<MaxHealthGameRule>) configured.getRules().get(MaxHealthGameRule.class);
+            Consumer<MaxHealthGameRule> consumer = (Consumer<MaxHealthGameRule>) configured.getRules().stream()
+                    .findFirst().get().getValues();
             MaxHealthGameRule rule = new MaxHealthGameRule();
             consumer.accept(rule);
 
