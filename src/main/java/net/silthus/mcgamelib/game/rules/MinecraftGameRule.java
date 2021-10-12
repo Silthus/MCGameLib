@@ -1,27 +1,18 @@
 package net.silthus.mcgamelib.game.rules;
 
-import lombok.Builder;
 import lombok.Getter;
+import net.silthus.mcgamelib.game.GameRule;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @Getter
-@Builder
 public class MinecraftGameRule implements GameRule {
 
-    @Builder.Default
     private final Map<org.bukkit.GameRule<?>, Object> rules = new HashMap<>();
 
-    public static class MinecraftGameRuleBuilder {
-
-        public <TValue> MinecraftGameRuleBuilder rule(org.bukkit.GameRule<TValue> gameRule, TValue value) {
-            if (!rules$set) {
-                rules$value = new HashMap<>();
-            }
-            rules$value.put(gameRule, value);
-            rules$set = true;
-            return this;
-        }
+    public <TValue> MinecraftGameRule rule(org.bukkit.GameRule<TValue> gameRule, TValue value) {
+        rules.put(gameRule, value);
+        return this;
     }
 }

@@ -7,6 +7,7 @@ import net.silthus.configmapper.bukkit.BukkitConfigMap;
 import net.silthus.mcgamelib.event.GameEvent;
 import net.silthus.mcgamelib.events.PlayerJoinedGameEvent;
 import net.silthus.mcgamelib.events.PlayerQuitGameEvent;
+import net.silthus.mcgamelib.game.GameRule;
 import org.bukkit.GameMode;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -17,16 +18,16 @@ import java.util.UUID;
 
 @Setter
 @Getter
-public class GameModeRule implements GameRule {
+public class GamemodeGameRule implements GameRule {
 
     @ConfigOption
     private GameMode gamemode = GameMode.SURVIVAL;
     private final Map<UUID, GameMode> oldGameModes = new HashMap<>();
 
-    public static GameModeRule loadFrom(ConfigurationSection configuration) {
-        return BukkitConfigMap.of(GameModeRule.class)
+    public static GamemodeGameRule loadFrom(ConfigurationSection configuration) {
+        return BukkitConfigMap.of(GamemodeGameRule.class)
                 .with(configuration)
-                .applyTo(new GameModeRule());
+                .applyTo(new GamemodeGameRule());
     }
 
     @GameEvent

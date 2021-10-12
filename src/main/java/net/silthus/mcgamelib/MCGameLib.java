@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.silthus.mcgamelib.event.GameEventHandler;
+import net.silthus.mcgamelib.game.GameRule;
+import net.silthus.mcgamelib.game.GameRuleRegistry;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -23,6 +25,8 @@ public class MCGameLib extends JavaPlugin {
     @Getter
     @Setter(AccessLevel.PACKAGE)
     private GameEventHandler gameEventHandler;
+    @Getter
+    private GameRuleRegistry gameRuleRegistry;
 
     public MCGameLib() {
         instance = this;
@@ -38,6 +42,7 @@ public class MCGameLib extends JavaPlugin {
     public void onEnable() {
 
         gameEventHandler = new GameEventHandler(this);
+        gameRuleRegistry = GameRuleRegistry.instance();
     }
 
     public void registerEvents(Game game, Listener listener) {

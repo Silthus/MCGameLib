@@ -6,6 +6,7 @@ import net.silthus.mcgamelib.GameMode;
 import net.silthus.mcgamelib.TestBase;
 import net.silthus.mcgamelib.events.PlayerJoinedGameEvent;
 import net.silthus.mcgamelib.events.PlayerQuitGameEvent;
+import net.silthus.mcgamelib.game.GameRule;
 import org.bukkit.configuration.MemoryConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,9 +14,9 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
-public class GameModeRuleTests extends TestBase {
+public class GamemodeGameRuleTests extends TestBase {
 
-    private GameModeRule rule;
+    private GamemodeGameRule rule;
     private Game game;
 
     @Override
@@ -23,7 +24,7 @@ public class GameModeRuleTests extends TestBase {
     public void setUp() {
         super.setUp();
 
-        rule = new GameModeRule();
+        rule = new GamemodeGameRule();
         game = new Game(GameMode.builder().build());
 
         rule.setGamemode(org.bukkit.GameMode.CREATIVE);
@@ -74,7 +75,7 @@ public class GameModeRuleTests extends TestBase {
 
         MemoryConfiguration cfg = new MemoryConfiguration();
         cfg.set("gamemode", "creative");
-        GameModeRule rule = GameModeRule.loadFrom(cfg);
+        GamemodeGameRule rule = GamemodeGameRule.loadFrom(cfg);
 
         assertThat(rule.getGamemode())
                 .isEqualTo(org.bukkit.GameMode.CREATIVE);

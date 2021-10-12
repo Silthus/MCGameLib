@@ -1,0 +1,7 @@
+id: test
+name: Test 1
+min_players: 2
+max_players: 10
+rules:
+  gamemode: adventure
+  max_health: 30

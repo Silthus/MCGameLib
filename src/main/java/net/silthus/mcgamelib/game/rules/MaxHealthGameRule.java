@@ -2,9 +2,11 @@ package net.silthus.mcgamelib.game.rules;
 
 import lombok.Getter;
 import lombok.Setter;
+import net.silthus.configmapper.ConfigOption;
 import net.silthus.mcgamelib.event.GameEvent;
 import net.silthus.mcgamelib.events.PlayerJoinedGameEvent;
 import net.silthus.mcgamelib.events.PlayerQuitGameEvent;
+import net.silthus.mcgamelib.game.GameRule;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Player;
@@ -16,11 +18,12 @@ import java.util.UUID;
 
 @Getter
 @Setter
-public class MaxHealthRule implements GameRule {
+public class MaxHealthGameRule implements GameRule {
 
     private static final double DEFAULT_MAX_HEALTH = 20d;
 
     private final Map<UUID, Double> maxHealths = new HashMap<>();
+    @ConfigOption
     private double maxHealth = DEFAULT_MAX_HEALTH;
 
     @GameEvent

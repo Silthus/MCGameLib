@@ -1,10 +1,22 @@
-package net.silthus.mcgamelib.game.rules;
+package net.silthus.mcgamelib.game;
 
+import lombok.NonNull;
 import net.silthus.configmapper.bukkit.BukkitConfigMap;
+import net.silthus.mcgamelib.game.rules.GamemodeGameRule;
+import net.silthus.mcgamelib.game.rules.MaxHealthGameRule;
+import net.silthus.mcgamelib.game.rules.MinecraftGameRule;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.Listener;
 
+import java.util.Set;
+
 public interface GameRule extends Listener {
+
+    Set<Class<? extends GameRule>> BUILTIN_GAME_RULE_TYPES = Set.of(
+            GamemodeGameRule.class,
+            MaxHealthGameRule.class,
+            MinecraftGameRule.class
+    );
 
     static <TRule extends GameRule> TRule load(Class<TRule> ruleClass, ConfigurationSection config) {
         return BukkitConfigMap.of(ruleClass)
@@ -16,5 +28,9 @@ public interface GameRule extends Listener {
         return BukkitConfigMap.of(rule)
                 .with(config)
                 .apply();
+    }
+
+    static String getName(@NonNull Class<? extends GameRule> gameRuleClass) {
+        return GameRuleUtil.getGameRuleName(gameRuleClass);
     }
 }

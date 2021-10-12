@@ -1,0 +1,12 @@
+name: My Test Game
+min_players: 2
+max_players: 4
+rules:
+  - name: max-health
+    with:
+      max_health: 30.0
+  - name: minecraft
+    with:
+      game_rules:
+        - name: DISABLE_RAIDS
+          value: true

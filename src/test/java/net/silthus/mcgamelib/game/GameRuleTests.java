@@ -1,7 +1,8 @@
-package net.silthus.mcgamelib.game.rules;
+package net.silthus.mcgamelib.game;
 
 import net.silthus.configmapper.ConfigOption;
 import net.silthus.configmapper.ConfigurationException;
+import net.silthus.mcgamelib.game.rules.GamemodeGameRule;
 import org.bukkit.GameMode;
 import org.bukkit.configuration.MemoryConfiguration;
 import org.junit.jupiter.api.Test;
@@ -17,11 +18,11 @@ class GameRuleTests {
         MemoryConfiguration config = new MemoryConfiguration();
         config.set("gamemode", "adventure");
 
-        GameModeRule rule = GameRule.load(GameModeRule.class, config);
+        GamemodeGameRule rule = GameRule.load(GamemodeGameRule.class, config);
 
         assertThat(rule)
                 .isNotNull()
-                .extracting(GameModeRule::getGamemode)
+                .extracting(GamemodeGameRule::getGamemode)
                 .isEqualTo(GameMode.ADVENTURE);
     }
 

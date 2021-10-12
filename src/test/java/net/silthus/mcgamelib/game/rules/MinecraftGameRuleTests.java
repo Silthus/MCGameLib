@@ -1,6 +1,7 @@
 package net.silthus.mcgamelib.game.rules;
 
 import net.silthus.mcgamelib.TestBase;
+import net.silthus.mcgamelib.game.GameRule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -19,7 +20,7 @@ public class MinecraftGameRuleTests extends TestBase {
     @Test
     void builder() {
 
-        MinecraftGameRule rule = MinecraftGameRule.builder().build();
+        MinecraftGameRule rule = new MinecraftGameRule();
         assertThat(rule)
                 .isNotNull()
                 .isInstanceOf(GameRule.class);
@@ -28,10 +29,9 @@ public class MinecraftGameRuleTests extends TestBase {
     @Test
     void builder_withGameRules() {
 
-        MinecraftGameRule rule = MinecraftGameRule.builder()
+        MinecraftGameRule rule = new MinecraftGameRule()
                 .rule(SPAWN_RADIUS, 10)
-                .rule(DISABLE_RAIDS, true)
-                .build();
+                .rule(DISABLE_RAIDS, true);
 
         assertThat(rule.getRules())
                 .hasSize(2)

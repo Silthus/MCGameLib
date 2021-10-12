@@ -6,7 +6,9 @@ import net.silthus.mcgamelib.GameMode;
 import net.silthus.mcgamelib.TestBase;
 import net.silthus.mcgamelib.events.PlayerJoinedGameEvent;
 import net.silthus.mcgamelib.events.PlayerQuitGameEvent;
+import net.silthus.mcgamelib.game.GameRule;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.entity.Player;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,9 +17,9 @@ import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class MaxHealthRuleTests extends TestBase {
+public class MaxHealthGameRuleTests extends TestBase {
 
-    private MaxHealthRule rule;
+    private MaxHealthGameRule rule;
     private Game game;
     private PlayerMock player;
 
@@ -26,7 +28,7 @@ public class MaxHealthRuleTests extends TestBase {
     public void setUp() {
         super.setUp();
 
-        rule = new MaxHealthRule();
+        rule = new MaxHealthGameRule();
         game = new Game(GameMode.builder().build());
         player = server.addPlayer();
     }
@@ -102,6 +104,17 @@ public class MaxHealthRuleTests extends TestBase {
         quitGame(player);
 
         assertHealth(player, 20d, 8d);
+    }
+
+    @Test
+    void loadWithConfig() {
+
+        MemoryConfiguration cfg = new MemoryConfiguration();
+        cfg.set("max_health", 100d);
+        MaxHealthGameRule rule = GameRule.load(MaxHealthGameRule.class, cfg);
+
+        assertThat(rule.getMaxHealth())
+                .isEqualTo(100d);
     }
 
     private void setMaxHealth(double maxHealth) {
